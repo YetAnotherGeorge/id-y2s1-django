@@ -1,0 +1,49 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "2g"
+
+# Docker Compose file for PostgreSQL and pgAdmin web ui
+services:
+  y2s1_django_postgres:
+    container_name: y2s1_django_postgres 
+    image: postgres:18.6 # 2026-10-18
+    env_file:
+      - .env
+    volumes:
+      - y2s1_django_postgres:/data/postgres
+      # - ./postgres.conf:/etc/postgresql/postgresql.conf
+    ports:
+      - "8010:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+    shm_size: 128mb # limit ram
+    networks:
+      - y2s1_django_postgres
+    logging: *default-logging
+    restart: unless-stopped
+
+  y2s1_django_pgadmin:
+    container_name: y2s1_django_pgadmin
+    image: dpage/pgadmin4:9.18.0 # 2026-10-18
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - y2s1_django_pgadmin:/var/lib/pgadmin
+    ports:
+      - "8011:80"
+    networks:
+      - y2s1_django_postgres
+    logging: *default-logging
+    restart: unless-stopped
+
+networks:
+  y2s1_django_postgres:
+    driver: bridge
+
+# Volume persistente
+volumes:
+  y2s1_django_postgres:
+  y2s1_django_pgadmin:
