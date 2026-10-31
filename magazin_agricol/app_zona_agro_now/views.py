@@ -12,8 +12,8 @@ class Accesare:
    def __init__(self, ip_client: str | None, url: str = "", parametri: dict[str, str | list[object]] | None = None):
       # Seteaza id - thread safe
       with self._id_lock:
-         self.id = self._next_id
-         self._next_id += 1
+         self.id = Accesare._next_id
+         Accesare._next_id += 1
    
       self.ip_client = ip_client
       self.url = url
@@ -45,6 +45,17 @@ class Accesare:
    def pagina(self) -> str:
       """Doar calea paginii (fara domeniu sau parametri), ex: / sau /info."""
       return urlparse(self.url).path or "/"
+
+   def __str__(self) -> str:
+      campuri = {
+         "id": self.id,
+         "ip_client": self.ip_client,
+         "string_url": self.string_url(),
+         "pagina": self.pagina(),
+         "calculeaza_data": self.calculeaza_data(),
+         "lista_parametri": self.lista_parametri(),
+      }
+      return "\n".join(f"{nume}: {valoare}" for nume, valoare in campuri.items())
    
    @staticmethod
    def din_cerere(request: django.http.HttpRequest) -> Accesare:
@@ -57,12 +68,13 @@ class Accesare:
          Accesare: An instance of the Accesare class representing the request details.
       """
       return Accesare(
-         ip_client=request.META.get("REMOTE_ADDR"),
+         ip_client=getattr(request, "ip_client", None),
          url=request.path,
          parametri=request.GET.dict(),
       )
 
 def index(request: django.http.HttpRequest) -> django.http.HttpResponse:
+   print(request.accesare) # type: ignore lab 1 - 9: print this
    return django.http.HttpResponse("""
       <!doctype html>
       <html lang="ro">
@@ -86,7 +98,14 @@ def index(request: django.http.HttpRequest) -> django.http.HttpResponse:
 
 
 def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
-   accesare = Accesare.din_cerere(request)
+   accesare = request.accesare # type: ignore
+   print(accesare)
+
+   tip = request.GET.get("data", "")
+   if tip in ("zi", "timp"):
+      sectiuni = accesare.calculeaza_data(tip=tip)
+   else:
+      sectiuni = accesare.calculeaza_data(tip="zi") + accesare.calculeaza_data(tip="timp")
 
    return django.http.HttpResponse(f"""
       <!doctype html>
