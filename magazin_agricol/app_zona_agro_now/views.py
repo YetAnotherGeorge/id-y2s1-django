@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+import django.http
 import datetime
 from typing import Tuple
 from threading import Lock
@@ -8,7 +8,7 @@ class Accesare:
    _next_id = 0
    _id_lock = Lock()
 
-   def __init__(self, ip_client: str | None, url: str = "", parametri: dict[str, object] | None = None):
+   def __init__(self, ip_client: str | None, url: str = "", parametri: dict[str, str | list[object]] | None = None):
       # Seteaza id - thread safe
       with self._id_lock:
          self.id = self._next_id
@@ -33,16 +33,24 @@ class Accesare:
             lp.append((k, v))
       return lp
 
-   @classmethod
-   def din_cerere(cls, request):
-      return cls(
+   @staticmethod
+   def din_cerere(request: django.http.HttpRequest) -> Accesare:
+      """static request factory method
+
+      Args:
+         request (HttpRequest): The incoming HTTP request object.
+
+      Returns:
+         Accesare: An instance of the Accesare class representing the request details.
+      """
+      return Accesare(
          ip_client=request.META.get("REMOTE_ADDR"),
          url=request.path,
          parametri=request.GET.dict(),
       )
 
-def index(request):
-   return HttpResponse("""
+def index(request: django.http.HttpRequest) -> django.http.HttpResponse:
+   return django.http.HttpResponse("""
       <!doctype html>
       <html lang="ro">
       <head>
@@ -64,13 +72,13 @@ def index(request):
    """)
 
 
-def info(request) -> HttpResponse:
+def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
    now = datetime.datetime.now()
    weekdays = ("Luni", "Marți", "Miercuri", "Joi", "Vineri", "Sâmbătă", "Duminică")
    months = ("Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie", "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie")
    formatted_date = f"{weekdays[now.weekday()]}, {now.day} {months[now.month - 1]} {now.year}"
 
-   return HttpResponse(f"""
+   return django.http.HttpResponse(f"""
       <!doctype html>
       <html lang="ro">
       <head>
