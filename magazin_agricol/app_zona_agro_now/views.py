@@ -25,7 +25,12 @@ def index(request):
 
 
 def info(request) -> HttpResponse:
-   return HttpResponse(f"""
+	now = datetime.datetime.now()
+	weekdays = ("Luni", "Marți", "Miercuri", "Joi", "Vineri", "Sâmbătă", "Duminică")
+	months = ("Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie", "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie")
+	formatted_date = f"{weekdays[now.weekday()]}, {now.day} {months[now.month - 1]} {now.year}"
+
+	return HttpResponse(f"""
       <!doctype html>
       <html lang="ro">
       <head>
@@ -34,7 +39,10 @@ def info(request) -> HttpResponse:
       </head>
       <body>
          <h1>Informatii despre server</h1>
-         <br>
+         <section>
+				<h1>Data și ora</h1>
+				<p>{formatted_date}, ora {now:%H:%M:%S}</p>
+         </section>
       </body>
       </html>
    """)
