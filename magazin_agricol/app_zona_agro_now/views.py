@@ -3,6 +3,7 @@ import datetime
 from typing import Tuple
 from threading import Lock
 from urllib.parse import urlparse
+from .utils.data_ro import formateaza_data_ro, FORMAT_IMPLICIT
 
 class Accesare:
    _next_id = 0
@@ -33,6 +34,10 @@ class Accesare:
             lp.append((k, v))
       return lp
    
+   def calculeaza_data(self, format: str = FORMAT_IMPLICIT) -> str:
+      """Data accesarii, formatata in limba romana (coduri ca in datetime.strftime)."""
+      return formateaza_data_ro(self.data, format)
+
    def string_url(self) -> str:
       """Intreg url-ul, inclusiv query string."""
       return self.url
@@ -81,10 +86,7 @@ def index(request: django.http.HttpRequest) -> django.http.HttpResponse:
 
 
 def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
-   now = datetime.datetime.now()
-   weekdays = ("Luni", "Marți", "Miercuri", "Joi", "Vineri", "Sâmbătă", "Duminică")
-   months = ("Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie", "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie")
-   formatted_date = f"{weekdays[now.weekday()]}, {now.day} {months[now.month - 1]} {now.year}"
+   accesare = Accesare.din_cerere(request)
 
    return django.http.HttpResponse(f"""
       <!doctype html>
@@ -97,7 +99,7 @@ def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
          <h1>Informatii despre server</h1>
          <section>
             <h1>Data și ora</h1>
-            <p>{formatted_date}, ora {now:%H:%M:%S}</p>
+            <p>{accesare.calculeaza_data()}, ora {accesare.calculeaza_data("%H:%M:%S")}</p>
          </section>
       </body>
       </html>
