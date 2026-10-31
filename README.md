@@ -9,4 +9,4 @@ Lab 1 - 1
 Lab 1 - 2
 Lab 1 - 3
 Lab 1 - 4: Middleware Accesare
-Lab 1 - 5: 
+Lab 1 - 5: string_url, pagina

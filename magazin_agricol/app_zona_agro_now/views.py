@@ -2,7 +2,7 @@ import django.http
 import datetime
 from typing import Tuple
 from threading import Lock
-
+from urllib.parse import urlparse
 
 class Accesare:
    _next_id = 0
@@ -32,7 +32,15 @@ class Accesare:
          else:
             lp.append((k, v))
       return lp
+   
+   def string_url(self) -> str:
+      """Intreg url-ul, inclusiv query string."""
+      return self.url
 
+   def pagina(self) -> str:
+      """Doar calea paginii (fara domeniu sau parametri), ex: / sau /info."""
+      return urlparse(self.url).path or "/"
+   
    @staticmethod
    def din_cerere(request: django.http.HttpRequest) -> Accesare:
       """static request factory method
