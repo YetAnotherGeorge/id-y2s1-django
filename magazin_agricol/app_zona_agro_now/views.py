@@ -34,8 +34,12 @@ class Accesare:
             lp.append((k, v))
       return lp
    
-   def calculeaza_data(self, format: str = FORMAT_IMPLICIT) -> str:
-      """Data accesarii, formatata in limba romana (coduri ca in datetime.strftime)."""
+   def calculeaza_data(self, format: str = FORMAT_IMPLICIT, tip: str = "") -> str:
+      """Data accesarii in romana. Pentru tip "zi" sau "timp" returneaza sectiunea HTML; altfel stringul simplu."""
+      if tip == "zi":
+         return f"<section><h2>Data</h2><p>{formateaza_data_ro(self.data, FORMAT_IMPLICIT)}</p></section>"
+      if tip == "timp":
+         return f"<section><h2>Ora</h2><p>{formateaza_data_ro(self.data, '%H:%M:%S')}</p></section>"
       return formateaza_data_ro(self.data, format)
 
    def string_url(self) -> str:
@@ -116,10 +120,7 @@ def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
       </head>
       <body>
          <h1>Informatii despre server</h1>
-         <section>
-            <h1>Data și ora</h1>
-            <p>{accesare.calculeaza_data()}, ora {accesare.calculeaza_data("%H:%M:%S")}</p>
-         </section>
+         {sectiuni}
       </body>
       </html>
    """)

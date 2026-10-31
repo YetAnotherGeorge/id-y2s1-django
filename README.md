@@ -12,3 +12,6 @@ Lab 1 - 4: Middleware Accesare
 Lab 1 - 5: string_url, pagina
 lab 1 - 6 
 lab 1 - 7: utils: data_ro.py
+lab 1 - 8: custom middleware for ip
+lab 1 - 9 
+lab 1 - 10: data param
