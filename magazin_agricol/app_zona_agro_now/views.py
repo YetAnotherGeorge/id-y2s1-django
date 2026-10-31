@@ -1,5 +1,30 @@
 from django.http import HttpResponse
 import datetime
+from threading import Lock
+
+
+class Accesare:
+	_next_id = 0
+	_id_lock = Lock()
+
+	def __init__(self, ip_client: str | None, url: str = "", parametri: dict[str, object] | None = None):
+      # Seteaza id - thread safe
+		with self._id_lock:
+			self.id = self._next_id
+			self._next_id += 1
+   
+		self.ip_client = ip_client
+		self.url = url
+		self.parametri = {} if parametri is None else parametri
+		self.data = datetime.datetime.now()
+
+	@classmethod
+	def din_cerere(cls, request):
+		return cls(
+			ip_client=request.META.get("REMOTE_ADDR"),
+			url=request.path,
+			parametri=request.GET.dict(),
+		)
 
 def index(request):
 	return HttpResponse("""
