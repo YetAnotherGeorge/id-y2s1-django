@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include, URLResolver
 
 urlpatterns: list[URLResolver] = [
+    path("", include("app_zona_agro_now.urls")),
     path('admin/', admin.site.urls),
     path("app_zona_agro_now/", include("app_zona_agro_now.urls"))
 ]
