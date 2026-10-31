@@ -20,7 +20,18 @@ class Accesare:
       self.data = datetime.datetime.now()
 
    def lista_parametri(self) -> list[Tuple[str, object | None]]:
-      return list(self.parametri.items())
+      """dict to tuple
+
+      Returns:
+         list[Tuple[str, object | None]]: 
+      """
+      lp = []
+      for k, v in self.parametri.items():
+         if v is None:
+            lp.append((k, None))
+         else:
+            lp.append((k, v))
+      return lp
 
    @classmethod
    def din_cerere(cls, request):
