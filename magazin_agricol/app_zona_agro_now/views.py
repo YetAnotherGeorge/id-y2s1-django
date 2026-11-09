@@ -1,13 +1,20 @@
 import django.http
 import datetime
-from typing import Tuple
+import urllib.parse
+from typing import * # type: ignore
 from threading import Lock
-from urllib.parse import urlparse
+# local_imports
 from .utils.data_ro import formateaza_data_ro, FORMAT_IMPLICIT
+from .utils.istoric_cerere.istoric_cerere import IstoricCerere, IstoricCereri
 
 class Accesare:
-   _next_id = 0
-   _id_lock = Lock()
+   _next_id: int = 0 # static 
+   _id_lock: Lock = Lock() # static 
+   
+   id: int
+   url: str
+   parametri: Dict[str, Any]
+   data: datetime.datetime
 
    def __init__(self, ip_client: str | None, url: str = "", parametri: dict[str, str | list[object]] | None = None):
       # Seteaza id - thread safe
@@ -48,7 +55,7 @@ class Accesare:
 
    def pagina(self) -> str:
       """Doar calea paginii (fara domeniu sau parametri), ex: / sau /info."""
-      return urlparse(self.url).path or "/"
+      return urllib.parse.urlparse(self.url).path or "/"
 
    def __str__(self) -> str:
       campuri = {
@@ -77,7 +84,11 @@ class Accesare:
          parametri=request.GET.dict(),
       )
 
+# VIEW: Index
 def index(request: django.http.HttpRequest) -> django.http.HttpResponse:
+   """
+   Returneaza pagina principala a magazinului agricol.
+   """
    print(request.accesare) # type: ignore lab 1 - 9: print this
    return django.http.HttpResponse("""
       <!doctype html>
@@ -100,8 +111,12 @@ def index(request: django.http.HttpRequest) -> django.http.HttpResponse:
       </html>
    """)
 
-
+# VIEW: Info
 def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
+   """
+   Returneaza pagina simpla cu info despre server
+   """
+   
    accesare = request.accesare # type: ignore
    print(accesare)
 
@@ -124,3 +139,42 @@ def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
       </body>
       </html>
    """)
+
+# View: Istoric Cereri
+def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse:
+   try: 
+      ultimele_raw: str | None = request.GET.get("ultimele", None)
+      ultimele: int = int(ultimele_raw) if ultimele_raw is not None else len(IstoricCereri.cereri)
+      
+      asked_for_too_many: bool = ultimele > len(IstoricCereri.cereri)
+      asked_for_too_many_html_str: str = ""
+      
+      # generate html table
+      ultimele_table: str = IstoricCereri.to_html_table(
+         idx_start_inc = max(0, len(IstoricCereri.cereri) - ultimele)
+      )
+      # generate asked_for_too_many_html_str
+      if asked_for_too_many:
+         asked_for_too_many_html_str = f"""
+            <h2>Exista doar {len(IstoricCereri.cereri)} accesari fata de {ultimele} accesari cerute.</h2>
+         """
+      
+      return django.http.HttpResponse(f"""
+         <!doctype html>
+         <html lang="ro">
+         <head>
+            <meta charset="utf-8">
+            <title>Istoric Accesari</title>
+         </head>
+         <body>
+            <h1>Istoric Accesari</h1>
+            {ultimele_table}
+            { asked_for_too_many_html_str } 
+         </body>
+         </html>
+      """)
+   except Exception as e:
+      print(f"istoric_cereri exception: {e}")
+      return django.http.HttpResponse("Eroare la procesarea istoricului cererilor.", status=500)
+   
+   

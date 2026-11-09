@@ -74,6 +74,7 @@ WSGI_APPLICATION = 'magazin_agricol.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+# todo: configure with postgres
 DATABASES = {
    'default': {
       'ENGINE': 'django.db.backends.sqlite3',
