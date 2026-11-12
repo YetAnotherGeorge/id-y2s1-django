@@ -143,21 +143,54 @@ def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
 # View: Istoric Cereri
 def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse:
    try: 
-      ultimele_raw: str | None = request.GET.get("ultimele", None)
+      # ultimele param
+      ultimele_raw: str | None = request.GET.get("ultimele")
       ultimele: int = int(ultimele_raw) if ultimele_raw is not None else len(IstoricCereri.cereri)
       
+      # asked for too many
       asked_for_too_many: bool = ultimele > len(IstoricCereri.cereri)
       asked_for_too_many_html_str: str = ""
       
+      # accesari param
+      accesari: str | None = request.GET.get("accesari")
+      accesari_html: str = ""
+      if accesari is not None:
+         if accesari != "nr":
+            print(f"Invalid: accesari trebuie sa fie 'nr'")
+         else:
+            accesari_html = f"<h2>Accesari de la ultimul startup: {IstoricCereri.cereri_total_count}</h2>"
+      
+      # Parsare iduri (url de forma ?iduri=1&iduri=2&iduri=3,4)
+      iduri: List[str] | None = request.GET.getlist("iduri")
+      # print("ID-uri request:")
+      # print(iduri)
+      # print([id_2 for id in iduri for id_2 in id.split(',')]) # comprehensie dubla
+      
+      # pas 2: ordinea trebuie mentinuta, set nu garanteaza ordinea
+      iduri_flattened: List[str] | None = None
+      # print(iduri)
+      
+      iduri_html: str = ""
+      if iduri is not None:
+         iduri_flattened = [id_2 for id in iduri for id_2 in id.split(',')]
+         iduri_html = f"<h2>ID-uri cerute: {iduri_flattened}</h2>"
+            
       # generate html table
-      ultimele_table: str = IstoricCereri.to_html_table(
-         idx_start_inc = max(0, len(IstoricCereri.cereri) - ultimele)
-      )
-      # generate asked_for_too_many_html_str
-      if asked_for_too_many:
-         asked_for_too_many_html_str = f"""
-            <h2>Exista doar {len(IstoricCereri.cereri)} accesari fata de {ultimele} accesari cerute.</h2>
-         """
+      if iduri_flattened is None: 
+         ultimele_table: str = IstoricCereri.to_html_table(
+            idx_start_inc = max(0, len(IstoricCereri.cereri) - ultimele)
+         )
+         # generate asked_for_too_many_html_str
+         if asked_for_too_many:
+            asked_for_too_many_html_str = f"""
+               <h2>Exista doar {len(IstoricCereri.cereri)} accesari fata de {ultimele} accesari cerute.</h2>
+            """
+      else: 
+         if request.GET["dubluri"] != None and bool(request.GET["dubluri"]) == True:
+            ultimele_table = IstoricCereri.to_html_table_array((([int(t) for t in iduri_flattened])))
+         else:
+            ultimele_table = IstoricCereri.to_html_table_array(list(set([int(t) for t in iduri_flattened])))
+      
       
       return django.http.HttpResponse(f"""
          <!doctype html>
@@ -170,6 +203,8 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
             <h1>Istoric Accesari</h1>
             {ultimele_table}
             { asked_for_too_many_html_str } 
+            {accesari_html}
+            {iduri_html}
          </body>
          </html>
       """)

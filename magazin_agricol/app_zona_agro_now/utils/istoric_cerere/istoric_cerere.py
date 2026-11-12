@@ -25,6 +25,8 @@ class IstoricCerere:
 class IstoricCereri:
    """ Clasa statica pentru gestionarea istoricului cererilor - thread safe """
    lck: Lock = Lock()
+   cereri_total_count: int = 0 # total req since server start
+   
    cereri_count_max: int = 10000
    cereri: list[IstoricCerere] = []
    
@@ -35,6 +37,7 @@ class IstoricCereri:
          if len(IstoricCereri.cereri) >= IstoricCereri.cereri_count_max:
             IstoricCereri.cereri.pop(0)
          IstoricCereri.cereri.append(cerere)
+         IstoricCereri.cereri_total_count += 1
    
 
    @staticmethod
@@ -48,6 +51,24 @@ class IstoricCereri:
          :(idx_end_exc if idx_end_exc is not None else len(IstoricCereri.cereri))
          :(step if step is not None else 1)
       ]
+      
+      with IstoricCereri.lck:
+         rows = "".join(c.to_html_str() for c in cereri_sel)
+         
+      return f"""
+         <table>
+            <tr><th>Requested Page</th><th>Timestamp</th><th>IP Client</th><th>IP X-Forwarded-For</th></tr>
+            {rows}
+         </table>
+      """
+      
+   @staticmethod
+   def to_html_table_array(cereri_idx: list[int]) -> str:
+      """ Randeaza (o submultime) din istoric ca un un tabel HTML """
+      rows: str = ""
+      
+      # selecteaza submultimea target
+      cereri_sel: list = [IstoricCereri.cereri[i] for i in cereri_idx if 0 <= i < len(IstoricCereri.cereri)]
       
       with IstoricCereri.lck:
          rows = "".join(c.to_html_str() for c in cereri_sel)

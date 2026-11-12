@@ -1,0 +1,30 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/log?accesari=nr&ultimele=20&iduri=2,3&iduri=5&iduri=4,2,1&dubluri=true
+method: GET
+queryParams:
+  - key: accesari
+    value: nr
+    disabled: false
+    description: ""
+  - key: ultimele
+    value: "20"
+    disabled: false
+    description: ""
+  - key: iduri
+    value: 2,3
+    disabled: false
+    description: ""
+  - key: iduri
+    value: "5"
+    disabled: false
+    description: ""
+  - key: iduri
+    value: 4,2,1
+    disabled: false
+    description: ""
+  - key: dubluri
+    value: "true"
+    disabled: false
+    description: ""
+order: 1458
