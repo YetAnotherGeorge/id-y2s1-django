@@ -162,7 +162,7 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
       # print(iduri)
       
       iduri_html: str = ""
-      if iduri is not None:
+      if iduri is not None and len(iduri) > 0:
          iduri_flattened = [id_2 for id in iduri for id_2 in id.split(',')]
          iduri_html = f"<h2>ID-uri cerute: {iduri_flattened}</h2>"
             
@@ -197,6 +197,46 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
       # sectiune parametri: print request.GET dict with how many params + their names
       parametri_html: str = f"<h2>Parametri GET ({len(request.GET)}): {', '.join(request.GET.keys())}</h2>"
        
+      # argument tabel
+      accesari_tabel_html: str = ""
+      if request.GET.get("tabel") is not None:
+         tabel_query = str(request.GET.get("tabel")).lower().strip()
+         ids_int: List[int] = [int(t) for t in iduri_flattened]
+         ic_list: List[IstoricCerere] = [IstoricCereri.cereri[i] for i in ids_int if i < len(IstoricCereri.cereri)]
+         
+         param_selected = {}
+         if tabel_query == "tot":
+            # afiseaza toate datele accesarilor (selectate) sub forma de tabel html
+            param_selected = { "id", "url", "timestamp", "ip_client", "ip_x_forwarded_for"}
+         else: 
+            # doar anumite coloane din datele accesarilor
+            param_selected = { col.strip() for col in tabel_query.split(",") }
+      
+         # process param_selected - header
+         accesari_tabel_html = f"""
+            <h1>Zona pentru parametrul tabel: {tabel_query}</h1>
+            <table>
+               <tr>
+                  {("<th>ID</th>" if "id" in param_selected else "")}
+                  {("<th>Requested Page</th>" if "url" in param_selected else "")}
+                  {("<th>Timestamp</th>" if "timestamp" in param_selected else "")}
+                  {("<th>IP Client</th>" if "ip_client" in param_selected else "")}
+                  {("<th>IP X-Forwarded-For</th>" if "ip_x_forwarded_for" in param_selected else "")}
+               </tr>
+         """
+             
+         for ic,id in zip(ic_list, ids_int):
+            accesari_tabel_html += f"""<tr>
+               {("<td>" + str(id) + "</td>" if "id" in param_selected else "")}
+               {("<td>" + ic.requested_page + "</td>" if "url" in param_selected else "")}
+               {("<td>" + ic.timestamp + "</td>" if "timestamp" in param_selected else "")}
+               {("<td>" + ic.ip_client + "</td>" if "ip_client" in param_selected else "")}
+               {("<td>" + (ic.ip_x_forwarded_for or '') + "</td>" if "ip_x_forwarded_for" in param_selected else "")}
+            </tr>"""
+            
+         accesari_tabel_html += "</table>"
+         
+      
       return django.http.HttpResponse(f"""
          <!doctype html>
          <html lang="ro">
@@ -211,6 +251,7 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
             { accesari_html }
             { iduri_html }
             { parametri_html }
+            { accesari_tabel_html }
          </body>
          </html>
       """)
