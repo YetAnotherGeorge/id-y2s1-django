@@ -151,22 +151,13 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
       asked_for_too_many: bool = ultimele > len(IstoricCereri.cereri)
       asked_for_too_many_html_str: str = ""
       
-      # accesari param
-      accesari: str | None = request.GET.get("accesari")
-      accesari_html: str = ""
-      if accesari is not None:
-         if accesari != "nr":
-            print(f"Invalid: accesari trebuie sa fie 'nr'")
-         else:
-            accesari_html = f"<h2>Accesari de la ultimul startup: {IstoricCereri.cereri_total_count}</h2>"
-      
       # Parsare iduri (url de forma ?iduri=1&iduri=2&iduri=3,4)
       iduri: List[str] | None = request.GET.getlist("iduri")
       # print("ID-uri request:")
       # print(iduri)
       # print([id_2 for id in iduri for id_2 in id.split(',')]) # comprehensie dubla
       
-      # pas 2: ordinea trebuie mentinuta, set nu garanteaza ordinea
+      # pas: obtinere id-uri
       iduri_flattened: List[str] | None = None
       # print(iduri)
       
@@ -175,11 +166,11 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
          iduri_flattened = [id_2 for id in iduri for id_2 in id.split(',')]
          iduri_html = f"<h2>ID-uri cerute: {iduri_flattened}</h2>"
             
-      # generate html table
+      # generate html table / set iduri_flattened
       if iduri_flattened is None: 
-         ultimele_table: str = IstoricCereri.to_html_table(
-            idx_start_inc = max(0, len(IstoricCereri.cereri) - ultimele)
-         )
+         idx_start_inc = max(0, len(IstoricCereri.cereri) - ultimele)
+         ultimele_table: str = IstoricCereri.to_html_table(idx_start_inc = idx_start_inc)
+         iduri_flattened = [str(i) for i in range(idx_start_inc, len(IstoricCereri.cereri))]
          # generate asked_for_too_many_html_str
          if asked_for_too_many:
             asked_for_too_many_html_str = f"""
@@ -191,7 +182,21 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
          else:
             ultimele_table = IstoricCereri.to_html_table_array(list(set([int(t) for t in iduri_flattened])))
       
-      
+      # accesari param
+      accesari_html: str = ""
+      if request.GET.get("accesari") is not None and str(request.GET.get("accesari")).lower() == "nr":
+         accesari_html = f"<h2>Accesari de la ultimul startup: {IstoricCereri.cereri_total_count}</h2>"
+      if request.GET.get("accesari") is not None and str(request.GET.get("accesari")).lower() == "detalii":
+         # afiseaza sub forma de lista neordonata html data si ora la care s-a relizat fiecare accesare
+         accesari_detalii_html = "<ul>"
+         for accesare in [id for id in [int (t) for t in iduri_flattened] if id < len(IstoricCereri.cereri)]:
+            accesari_detalii_html += f"<li>{" ".join(IstoricCereri.cereri[int(accesare)].timestamp.split('T'))}</li>"
+         accesari_detalii_html += "</ul>"
+         accesari_html += accesari_detalii_html
+         
+      # sectiune parametri: print request.GET dict with how many params + their names
+      parametri_html: str = f"<h2>Parametri GET ({len(request.GET)}): {', '.join(request.GET.keys())}</h2>"
+       
       return django.http.HttpResponse(f"""
          <!doctype html>
          <html lang="ro">
@@ -201,10 +206,11 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
          </head>
          <body>
             <h1>Istoric Accesari</h1>
-            {ultimele_table}
+            { ultimele_table }
             { asked_for_too_many_html_str } 
-            {accesari_html}
-            {iduri_html}
+            { accesari_html }
+            { iduri_html }
+            { parametri_html }
          </body>
          </html>
       """)
