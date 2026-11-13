@@ -201,8 +201,8 @@ def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse
       accesari_tabel_html: str = ""
       if request.GET.get("tabel") is not None:
          tabel_query = str(request.GET.get("tabel")).lower().strip()
-         ids_int: List[int] = [int(t) for t in iduri_flattened]
-         ic_list: List[IstoricCerere] = [IstoricCereri.cereri[i] for i in ids_int if i < len(IstoricCereri.cereri)]
+         ids_int: List[int] = [int(t) for t in iduri_flattened if int(t) < len(IstoricCereri.cereri)]
+         ic_list: List[IstoricCerere] = [IstoricCereri.cereri[i] for i in ids_int]
          
          param_selected = {}
          if tabel_query == "tot":
