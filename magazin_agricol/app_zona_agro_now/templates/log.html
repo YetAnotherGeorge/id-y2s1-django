@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Istoric Accesari{% endblock %}
+
+{% block content %}
+<h1>Istoric Accesari</h1>
+<table>
+   <tr><th>Requested Page</th><th>Timestamp</th><th>IP Client</th><th>IP X-Forwarded-For</th></tr>
+   {% for cerere in cereri %}
+   <tr>
+      <td>{{ cerere.requested_page }}</td>
+      <td>{{ cerere.timestamp }}</td>
+      <td>{{ cerere.ip_client|default_if_none:"" }}</td>
+      <td>{{ cerere.ip_x_forwarded_for|default_if_none:"" }}</td>
+   </tr>
+   {% endfor %}
+</table>
+
+{% if prea_multe %}
+<h2>Exista doar {{ numar_cereri }} accesari fata de {{ ultimele }} accesari cerute.</h2>
+{% endif %}
+
+{% if accesari == "nr" %}
+<h2>Accesari de la ultimul startup: {{ total_accesari }}</h2>
+{% elif accesari == "detalii" %}
+<ul>{% for detaliu in detalii %}<li>{{ detaliu }}</li>{% endfor %}</ul>
+{% endif %}
+
+{% if iduri_cerute %}<h2>ID-uri cerute: {{ iduri_cerute }}</h2>{% endif %}
+<h2>Parametri GET ({{ numar_parametri }}): {{ parametri|join:", " }}</h2>
+
+{% if tabel_query != None %}
+<h2>Zona pentru parametrul tabel: {{ tabel_query }}</h2>
+<table>
+   <tr>
+      {% if "id" in coloane %}<th>ID</th>{% endif %}
+      {% if "url" in coloane %}<th>Requested Page</th>{% endif %}
+      {% if "timestamp" in coloane %}<th>Timestamp</th>{% endif %}
+      {% if "ip_client" in coloane %}<th>IP Client</th>{% endif %}
+      {% if "ip_x_forwarded_for" in coloane %}<th>IP X-Forwarded-For</th>{% endif %}
+   </tr>
+   {% for id, cerere in randuri %}
+   <tr>
+      {% if "id" in coloane %}<td>{{ id }}</td>{% endif %}
+      {% if "url" in coloane %}<td>{{ cerere.requested_page }}</td>{% endif %}
+      {% if "timestamp" in coloane %}<td>{{ cerere.timestamp }}</td>{% endif %}
+      {% if "ip_client" in coloane %}<td>{{ cerere.ip_client|default_if_none:"" }}</td>{% endif %}
+      {% if "ip_x_forwarded_for" in coloane %}<td>{{ cerere.ip_x_forwarded_for|default_if_none:"" }}</td>{% endif %}
+   </tr>
+   {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

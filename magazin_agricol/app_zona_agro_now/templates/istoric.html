@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/istoric.css' %}">
+{% endblock %}
+
+{% block title %}AgroNow - Istoric{% endblock %}
+
+{%block content %}
+<h2>Istoric</h2>
+<p>AgroNow a fost fondat pentru a oferi piese și componente mecanice de calitate pentru tractoare și utilaje agricole.</p>
+
+<div>
+   <h3>Istoricul nostru, pe scurt</h3>
+   <p>De la înființarea sa, AgroNow a crescut constant, oferind clienților săi produse de calitate și servicii de încredere.</p>
+   <p>Ne mândrim cu tradiția noastră și cu angajamentul față de excelență în domeniul pieselor și componentelor mecanice pentru utilaje agricole.</p>
+   <p>Compania noastră continuă să inoveze și să se adapteze nevoilor clienților, menținându-se fidelă valorilor sale fundamentale de calitate și fiabilitate.</p>
+
+   {% comment %} timeline evenimente {% endcomment %}
+   <div class="timeline">
+      <div class="container left">
+         <div class="content">
+            <span class="timeline-title">2005</span>
+            <span class="timeline-content">Înfiițarea AgroNow.</span>
+         </div>
+      </div>
+      <div class="container right">
+         <div class="content">
+            <span class="timeline-title">2010</span>
+            <span class="timeline-content">#10 din firme active cu CAEN 4661 - Comerț cu ridicata al mașinilor agricole, echipamentelor și furniturilor</span>
+         </div>
+      </div>
+      <div class="container left">
+         <div class="content">
+            <span class="timeline-title">2012</span>
+            <span class="timeline-content">#5 din firme active cu CAEN 4661 - Comerț cu ridicata al mașinilor agricole, echipamentelor și furniturilor</span>
+         </div>
+      </div>
+      <div class="container right">
+         <div class="content">
+            <span class="timeline-title">2020</span>
+            <span class="timeline-content">Peste un milion de clienti</span>
+         </div>
+      </div>
+      <div class="container left">
+         <div class="content">
+            <span class="timeline-title">2025</span>
+            <span class="timeline-content">Partener oficial John Deere</span>
+         </div>
+      </div>
+   </div>
+
+   {% comment %} cele mai accesate / cele mai putin accesate pagini {% endcomment %}
+   <div class="cele-mai-accesate">
+     <table>
+      <thead>
+         <tr>
+            <th>Pagina</th>
+            <th>Tip</th>
+            <th>Numar Accesari</th>
+         </tr>
+         <tr>
+            <td>{{ ic_top }}</td>
+            <td>Cea mai accesata pagina</td>
+            <td>{{ ic_top_count }}</td>
+         </tr>
+         <tr>
+            <td>{{ ic_bottom }}</td>
+            <td>Cea mai putin accesata pagina (din cele accesate)</td>
+            <td>{{ ic_bottom_count }}</td>
+         </tr>
+      </thead>
+     </table>
+   </div>
+</div>
+{% endblock %}

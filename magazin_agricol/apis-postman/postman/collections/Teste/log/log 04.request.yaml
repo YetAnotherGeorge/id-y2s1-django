@@ -1,0 +1,10 @@
+$kind: http-request
+description: ""
+url: http://localhost:8000/log?tabel=timestamp,ip_client,id
+method: GET
+queryParams:
+  - key: tabel
+    value: timestamp,ip_client,id
+    disabled: false
+    description: ""
+order: 1000

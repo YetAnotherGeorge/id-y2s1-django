@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:8000/info?data=timp
+method: GET
+queryParams:
+  data: timp
+order: 1247

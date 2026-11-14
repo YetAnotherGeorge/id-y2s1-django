@@ -1,7 +1,13 @@
-from .utils.istoric_cerere import istoric_cerere
-
-from .views import Accesare
-
+import datetime
+import urllib.parse
+import threading
+import django
+import django.http
+from typing import * # type: ignore
+# local_imports
+from .utils.request_tools import istoric_cerere
+from .utils.request_tools.accesare_threadsafe import Accesare
+   
 # Folosit in magazin_agricol\magazin_agricol\settings.py, in MIDDLEWARE
 class AccesareMiddleware:
    def __init__(self, get_response):
@@ -10,6 +16,7 @@ class AccesareMiddleware:
    def __call__(self, request):
       request.ip_client = request.META.get("REMOTE_ADDR") # todo: X-forwarded-for in caz de LB
       request.accesare = Accesare.din_cerere(request)
+      print(f"AccesareMiddleware: {request.accesare}") # type: ignore lab 1 - 9: print this
       
       c_info: istoric_cerere.IstoricCerere = istoric_cerere.IstoricCerere(
          requested_page=request.path,

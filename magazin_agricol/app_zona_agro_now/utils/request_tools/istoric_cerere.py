@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from threading import Lock
 
 
@@ -39,17 +40,19 @@ class IstoricCereri:
          IstoricCereri.cereri.append(cerere)
          IstoricCereri.cereri_total_count += 1
    
-
    @staticmethod
    def to_html_table(idx_start_inc: int | None = None, idx_end_exc: int | None = None, step: int | None = None) -> str:
       """ Randeaza (o submultime) din istoric ca un un tabel HTML """
       rows: str = ""
       
       # selecteaza submultimea target
-      cereri_sel: list = IstoricCereri.cereri[
-         (idx_start_inc if idx_start_inc is not None else 0)
-         :(idx_end_exc if idx_end_exc is not None else len(IstoricCereri.cereri))
-         :(step if step is not None else 1)
+      cereri_sel: list[IstoricCerere]
+      
+      with IstoricCereri.lck:
+         cereri_sel = IstoricCereri.cereri[
+            (idx_start_inc if idx_start_inc is not None else 0)
+            :(idx_end_exc if idx_end_exc is not None else len(IstoricCereri.cereri))
+            :(step if step is not None else 1)
       ]
       
       with IstoricCereri.lck:
@@ -80,3 +83,14 @@ class IstoricCereri:
          </table>
       """
    
+   @staticmethod
+   def get_grouped(group_selector: Callable[[IstoricCerere], str]) -> dict[str, list[IstoricCerere]]:
+      """ Grupeaza cererile dupa criteriul dat de group_selector """
+      grouped: dict[str, list[IstoricCerere]] = {}
+      with IstoricCereri.lck:
+         for cerere in IstoricCereri.cereri:
+            key = group_selector(cerere)
+            if key not in grouped:
+               grouped[key] = []
+            grouped[key].append(cerere)
+      return grouped

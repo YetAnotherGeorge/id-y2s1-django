@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}AgroNow - Accesare {{ cerere.accesare.id }}{% endblock %}
+
+{% block content %}
+<h2>Accesarea {{ cerere.accesare.id }}</h2>
+<dl>
+   <dt>Pagina</dt><dd>{{ cerere.requested_page }}</dd>
+   <dt>URL</dt><dd>{{ cerere.accesare.string_url }}</dd>
+   <dt>Data si ora</dt><dd>{{ cerere.timestamp }}</dd>
+   <dt>IP client</dt><dd>{{ cerere.ip_client|default_if_none:"Necunoscut" }}</dd>
+   <dt>IP X-Forwarded-For</dt><dd>{{ cerere.ip_x_forwarded_for|default_if_none:"Necunoscut" }}</dd>
+</dl>
+<h3>Parametri GET</h3>
+<ul>
+   {% for nume, valoare in cerere.accesare.lista_parametri %}
+   <li>{{ nume }}: {{ valoare }}</li>
+   {% empty %}
+   <li>Nu exista parametri.</li>
+   {% endfor %}
+</ul>
+<a href="{% url 'log' %}">Inapoi la log</a>
+{% endblock %}

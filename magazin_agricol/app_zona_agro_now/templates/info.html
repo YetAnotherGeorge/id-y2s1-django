@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}AgroNow - Info{% endblock %}
+
+{% block content %}
+   <h2>Informatii despre server</h1>
+
+   {% if accTimeInfo.zi %}
+      <p>Data curenta: {{ accTimeInfo.zi }}</p>
+   {% else %}
+      <p>Data curenta: - NOT REQUESTED</p>
+   {% endif %}
+
+   {% if accTimeInfo.timp %}
+      <p>Ora curenta: {{ accTimeInfo.timp }}</p>
+   {% else %}
+      <p>Ora curenta: - NOT REQUESTED</p>
+   {% endif %}
+
+{% endblock %}

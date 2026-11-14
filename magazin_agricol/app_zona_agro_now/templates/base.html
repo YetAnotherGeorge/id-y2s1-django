@@ -1,0 +1,40 @@
+{% comment %} Enable serving static files {% endcomment %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <title>{% block title %}AgroNow{% endblock %}</title>
+
+   <link rel="stylesheet" href="{% static 'css/base.css' %}">
+   {% block extra_css %}{% endblock %}
+</head>
+<body>
+   <!-- Header -->
+   <header>
+      <h1>AgroNow</h1>
+      <nav>
+         <a href="{% url 'home'%}">Acasa</a>
+         <a href="{% url 'info' %}">Info</a>
+         <a href="{% url 'log' %}">Log</a>
+         <a href="{% url 'istoric' %}">Istoric</a>
+         <a href="{% url 'despre' %}">Despre</a>
+      </nav>
+   </header>
+
+   <!-- main -->
+   <div id="main-content">
+      <main>
+         {% block content %}{% endblock %}
+      </main>
+   </div>
+
+   <!-- Footer -->
+   <footer>
+      <p>AgroNow - piese pentru agricultură</p>
+   </footer>
+</body>
+</html>

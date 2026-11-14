@@ -1,0 +1,64 @@
+/* Define global CSS vars */
+:root {
+   --header-height: 100px;
+   --footer-height: 56px;
+}
+
+body {
+   margin: 0;
+   color: #072020;
+   background: #f7faf4;
+   font-family: Verdana, sans-serif;
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+}
+
+header {
+   box-sizing: border-box;
+   position: fixed;
+   left: 0;
+   right: 0;
+   top: 0;
+   height: var(--header-height);
+   padding: 12px 24px;
+   color: #fff;
+   background: #072020;
+   border-bottom: 4px solid #7FB069;
+
+   h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+   }
+   
+   nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 20px;
+
+      a {
+         color: #E4DE90;
+      }
+      a:hover, a:focus-visible {
+         color: #fff;
+      }
+   }
+}
+
+#main-content {
+   flex: 1;
+   margin-top: var(--header-height);
+}
+
+footer {
+   height: var(--footer-height);
+   box-sizing: border-box;
+   padding: 0 24px;
+   color: #f9f9f9;
+   background: #4f743f;
+   border-top: 3px solid #7fb069;
+
+   p {
+      margin: 16px 0;
+   }
+}
