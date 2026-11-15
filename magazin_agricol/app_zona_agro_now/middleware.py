@@ -22,6 +22,7 @@ class AccesareMiddleware:
          requested_page=request.path,
          timestamp=request.accesare.data.isoformat(),
          ip_client=request.ip_client,
+         accesare=request.accesare,
          ip_x_forwarded_for=request.META.get("HTTP_X_FORWARDED_FOR")
       )
       istoric_cerere.IstoricCereri.adauga_cerere(c_info)

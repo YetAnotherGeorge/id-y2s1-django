@@ -1,17 +1,21 @@
 from collections.abc import Callable
 from threading import Lock
 
+from .accesare_threadsafe import Accesare
+
 
 class IstoricCerere:
    requested_page: str
-   timestamp: str # format iso 8601
+   timestamp: str
    ip_client: str
+   accesare: Accesare
    ip_x_forwarded_for: str | None 
    
-   def __init__(self, requested_page: str, timestamp: str, ip_client: str, ip_x_forwarded_for: str | None):
+   def __init__(self, requested_page: str, timestamp: str, ip_client: str, ip_x_forwarded_for: str | None, accesare: Accesare):
       self.requested_page = requested_page
       self.timestamp = timestamp
       self.ip_client = ip_client
+      self.accesare = accesare
       self.ip_x_forwarded_for = ip_x_forwarded_for
       
    def to_html_str(self) -> str:
@@ -27,8 +31,8 @@ class IstoricCereri:
    """ Clasa statica pentru gestionarea istoricului cererilor - thread safe """
    lck: Lock = Lock()
    cereri_total_count: int = 0 # total req since server start
-   
    cereri_count_max: int = 10000
+   
    cereri: list[IstoricCerere] = []
    
    @staticmethod
@@ -94,3 +98,4 @@ class IstoricCereri:
                grouped[key] = []
             grouped[key].append(cerere)
       return grouped
+

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}AgroNow - Accesare {{ cerere.accesare.id }}{% endblock %}
+{% block title %}AgroNow - Accesare {{ id }}{% endblock %}
 
 {% block content %}
-<h2>Accesarea {{ cerere.accesare.id }}</h2>
+<h2>Accesarea {{ id }}</h2>
 <dl>
    <dt>Pagina</dt><dd>{{ cerere.requested_page }}</dd>
    <dt>URL</dt><dd>{{ cerere.accesare.string_url }}</dd>

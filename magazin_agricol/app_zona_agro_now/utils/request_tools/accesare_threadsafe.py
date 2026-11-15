@@ -12,11 +12,13 @@ class Accesare:
    _id_lock: threading.Lock = threading.Lock() # static 
    
    id: int
+   ip_client: str | None
    url: str
+   query_string: str
    parametri: Dict[str, Any]
    data: datetime.datetime
 
-   def __init__(self, ip_client: str | None, url: str = "", parametri: dict[str, str | list[object]] | None = None):
+   def __init__(self, ip_client: str | None, url: str = "", query_string: str = "", parametri: dict[str, str | list[object]] | None = None):
       # Seteaza id - thread safe
       with self._id_lock:
          self.id = Accesare._next_id
@@ -24,6 +26,7 @@ class Accesare:
    
       self.ip_client = ip_client
       self.url = url
+      self.query_string = query_string
       self.parametri = {} if parametri is None else parametri
       self.data = datetime.datetime.now()
 
@@ -42,16 +45,16 @@ class Accesare:
       return lp
    
    def calculeaza_data(self, format: str = FORMAT_IMPLICIT, tip: str = "") -> str:
-      """Data accesarii in romana. Pentru tip "zi" sau "timp" returneaza sectiunea HTML; altfel stringul simplu."""
+      """Returneaza data in romana sau sectiunea HTML ceruta."""
       if tip == "zi":
-         return f"<section><h2>Data</h2><p>{formateaza_data_ro(self.data, FORMAT_IMPLICIT)}</p></section>"
+         return f"<section><h2>Data si ora</h2><p>Data: {formateaza_data_ro(self.data, format)}</p></section>"
       if tip == "timp":
-         return f"<section><h2>Ora</h2><p>{formateaza_data_ro(self.data, '%H:%M:%S')}</p></section>"
+         return f"<section><h2>Data si ora</h2><p>Ora: {formateaza_data_ro(self.data, '%H:%M:%S')}</p></section>"
       return formateaza_data_ro(self.data, format)
 
    def string_url(self) -> str:
       """Intreg url-ul, inclusiv query string."""
-      return self.url
+      return self.url + ("?" + self.query_string if self.query_string else "")
 
    def pagina(self) -> str:
       """Doar calea paginii (fara domeniu sau parametri), ex: / sau /info."""
@@ -78,8 +81,14 @@ class Accesare:
       Returns:
          Accesare: An instance of the Accesare class representing the request details.
       """
+      parametri: Dict[str, Any] = {}
+      for key in request.GET:
+         values = request.GET.getlist(key)
+         parametri[key] = values[0] if len(values) == 1 else values
+      
       return Accesare(
          ip_client=getattr(request, "ip_client", None),
          url=request.path,
-         parametri=request.GET.dict(),
+         query_string=request.META.get("QUERY_STRING", ""),
+         parametri=parametri,
       )

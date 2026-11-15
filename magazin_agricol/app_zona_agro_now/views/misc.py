@@ -1,12 +1,10 @@
 import django
 import django.http
 import django.shortcuts
-from django.template import context
-from typing import * # type: ignore
+from typing import Any, Mapping
 # local_imports
-from ..utils.data_ro import formateaza_data_ro, FORMAT_IMPLICIT
 from ..utils.request_tools.accesare_threadsafe import Accesare
-from ..utils.request_tools.istoric_cerere import IstoricCerere, IstoricCereri
+from ..utils.request_tools.istoric_cerere import IstoricCereri
 
 
 def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
@@ -19,21 +17,15 @@ def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
    # print(accesare)  # printat de middleware
 
    tip: str = request.GET.get("data", "")
-   accTimeInfo: Mapping[str, Any] = {}
-  
-   if tip in ("zi", "timp"):
-      if tip == "zi":
-         accTimeInfo["zi"] = formateaza_data_ro(accesare.data, FORMAT_IMPLICIT)
-      else:
-         accTimeInfo["timp"] = formateaza_data_ro(accesare.data, "%H:%M:%S")
+   if tip == "zi":
+      data_html = accesare.calculeaza_data(tip="zi")
+   elif tip == "timp":
+      data_html = accesare.calculeaza_data(tip="timp")
    else:
-      accTimeInfo["zi"] = formateaza_data_ro(accesare.data, FORMAT_IMPLICIT)
-      accTimeInfo["timp"] = formateaza_data_ro(accesare.data, "%H:%M:%S")
+      data_html = accesare.calculeaza_data(tip="zi") + accesare.calculeaza_data(tip="timp")
 
    # Render page
-   context: Mapping[str, Any] = {
-      "accTimeInfo": accTimeInfo
-   }
+   context: Mapping[str, Any] = {"data_html": data_html}
    return django.shortcuts.render(request, 'info.html', context)
 
 
@@ -49,67 +41,74 @@ def detalii_accesare(request: django.http.HttpRequest, id: str) -> django.http.H
    Returns:
       django.http.HttpResponse: pagina cu detalii despre accesare
    """
-   cerere: IstoricCerere | None = None
+   index = int(id)
    with IstoricCereri.lck:
-      id_cerut: int | Never = int(id)
-      if 0 <= id_cerut < len(IstoricCereri.cereri):
-         cerere = IstoricCereri.cereri[id_cerut]
-      else: 
-         cerere = None
-
+      cerere = IstoricCereri.cereri[index] if 0 <= index < len(IstoricCereri.cereri) else None
    if cerere is None:
       raise django.http.Http404("Accesarea nu exista.")
 
-   return django.shortcuts.render(request, "accesare.html", {"cerere": cerere})
+   return django.shortcuts.render(request, "accesare.html", {"cerere": cerere, "id": index})
 
 
 def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse:
    """ 
    [VIEW] Cerinta lab 2: /log endpoint
    """
+   with IstoricCereri.lck:
+      cereri = list(IstoricCereri.cereri)
+      total = IstoricCereri.cereri_total_count
+
    try:
-      with IstoricCereri.lck:
-         cereri = list(IstoricCereri.cereri)
-         total_accesari = IstoricCereri.cereri_total_count
+      ultimele = int(request.GET.get("ultimele", len(cereri)))
+      iduri = [int(value.strip()) for group in request.GET.getlist("iduri") for value in group.split(",")]
+   except ValueError:
+      return django.http.HttpResponseBadRequest("Parametrii ultimele si iduri trebuie sa fie numerici.")
+   if ultimele < 0:
+      return django.http.HttpResponseBadRequest("Parametrul ultimele nu poate fi negativ.")
 
-      ultimele_raw = request.GET.get("ultimele")
-      ultimele = int(ultimele_raw) if ultimele_raw is not None else len(cereri)
-      iduri = request.GET.getlist("iduri")
-      iduri_cerute = [valoare for grup in iduri for valoare in grup.split(",")]
+   if iduri:
+      if request.GET.get("dubluri", "").lower() != "true":
+         iduri = list(dict.fromkeys(iduri))
+   else:
+      iduri = list(range(max(0, len(cereri) - ultimele), len(cereri)))
+   randuri = [(index, cereri[index]) for index in iduri if 0 <= index < len(cereri)]
 
-      if iduri:
-         iduri_selectate = [int(valoare) for valoare in iduri_cerute]
-         iduri_tabel = iduri_selectate if request.GET.get("dubluri") else list(set(iduri_selectate))
-      else:
-         idx_start = max(0, len(cereri) - ultimele)
-         iduri_selectate = list(range(idx_start, len(cereri)))
-         iduri_tabel = iduri_selectate
+   tabela = request.GET.get("tabel")
+   tabela = tabela.lower().strip() if tabela else None
+   proprietati = ("id", "ip_client", "url", "query_string", "parametri", "data")
+   coloane = list(proprietati) if tabela == "tot" else (tabela or "").split(",")
+   coloane = [column.strip() for column in coloane if column.strip()]
+   if any(column not in proprietati for column in coloane):
+      return django.http.HttpResponseBadRequest("Proprietate tabel necunoscuta.")
+   randuri_tabel = [
+      [index if column == "id" else
+       cerere.accesare.string_url() if column == "url" else
+       getattr(cerere.accesare, column) for column in coloane]
+      for index, cerere in randuri
+   ]
 
-      iduri_valide = [idx for idx in iduri_selectate if 0 <= idx < len(cereri)]
-      cereri_tabel = [cereri[idx] for idx in iduri_tabel if 0 <= idx < len(cereri)]
-      accesari = request.GET.get("accesari", "").lower()
-      tabel_query = request.GET.get("tabel")
-      tabel_query = tabel_query.lower().strip() if tabel_query is not None else None
-      coloane = {"id", "url", "timestamp", "ip_client", "ip_x_forwarded_for"} if tabel_query == "tot" else {
-         coloana.strip() for coloana in (tabel_query or "").split(",")
-      }
-
-      context = {
-         "cereri": cereri_tabel,
-         "numar_cereri": len(cereri),
-         "ultimele": ultimele,
-         "prea_multe": not iduri and ultimele > len(cereri),
-         "iduri_cerute": iduri_cerute,
-         "accesari": accesari,
-         "total_accesari": total_accesari,
-         "detalii": [cereri[idx].timestamp.replace("T", " ") for idx in iduri_valide],
-         "parametri": request.GET.keys(),
-         "numar_parametri": len(request.GET),
-         "tabel_query": tabel_query,
-         "coloane": coloane,
-         "randuri": [(idx, cereri[idx]) for idx in iduri_valide],
-      }
-      return django.shortcuts.render(request, "log.html", context)
-   except Exception as e:
-      print(f"istoric_cereri exception: {e}")
-      return django.http.HttpResponse("Eroare la procesarea istoricului cererilor.", status=500)
+   frecvente: dict[str, int] = {}
+   for cerere in cereri:
+      frecvente[cerere.requested_page] = frecvente.get(cerere.requested_page, 0) + 1
+   cel_mai_mult = max(frecvente, key=lambda k: frecvente[k]) if frecvente else ""
+   cel_mai_putin = min(frecvente, key=lambda k: frecvente[k]) if frecvente else ""
+   parametri = [name for name, values in request.GET.lists() for _ in values]
+   context: Mapping[str, Any] = {
+      "randuri": randuri,
+      "numar_cereri": total,
+      "ultimele": ultimele,
+      "prea_multe": not request.GET.getlist("iduri") and ultimele > total,
+      "accesari": request.GET.get("accesari", "").lower(),
+      "total_accesari": total,
+      "detalii": [cerere.timestamp.replace("T", " ") for _, cerere in randuri],
+      "parametri": parametri,
+      "numar_parametri": len(parametri),
+      "tabel_query": tabela,
+      "coloane": [(column, column.replace("_", " ").title()) for column in coloane],
+      "randuri_tabel": randuri_tabel,
+      "pagina_top": cel_mai_mult,
+      "pagina_top_count": frecvente.get(cel_mai_mult),
+      "pagina_bottom": cel_mai_putin,
+      "pagina_bottom_count": frecvente.get(cel_mai_putin),
+   }
+   return django.shortcuts.render(request, "log.html", context)
