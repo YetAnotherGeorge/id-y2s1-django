@@ -1,5 +1,5 @@
 {% comment %} Enable serving static files {% endcomment %}
-{% load static %}
+{% load static_mtime %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +9,7 @@
 
    <title>{% block title %}AgroNow{% endblock %}</title>
 
-   <link rel="stylesheet" href="{% static 'css/base.css' %}">
+   <link rel="stylesheet" href="{% static_mtime 'css/base.css' %}">
    {% block extra_css %}{% endblock %}
 </head>
 <body>
