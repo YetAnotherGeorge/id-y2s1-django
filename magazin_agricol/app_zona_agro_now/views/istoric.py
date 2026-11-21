@@ -5,7 +5,7 @@ import django.shortcuts
 from ..utils.request_tools.accesare_threadsafe import Accesare
 from ..utils.request_tools.istoric_cerere import IstoricCerere, IstoricCereri
 
-def istoric(request: django.http.HttpRequest) -> django.http.HttpResponse:
+def view_istoric(request: django.http.HttpRequest) -> django.http.HttpResponse:
    """
    [VIEW] 
    Returneaza pagina cu istoricul magazinului agricol.

@@ -3,7 +3,7 @@ import django.http
 import django.shortcuts
 
 
-def despre(request: django.http.HttpRequest) -> django.http.HttpResponse:
+def view_despre(request: django.http.HttpRequest) -> django.http.HttpResponse:
    """
    [VIEW] despre page
    """

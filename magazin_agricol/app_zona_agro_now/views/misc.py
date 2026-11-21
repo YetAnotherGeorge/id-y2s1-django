@@ -7,7 +7,7 @@ from ..utils.request_tools.accesare_threadsafe import Accesare
 from ..utils.request_tools.istoric_cerere import IstoricCereri
 
 
-def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
+def view_info(request: django.http.HttpRequest) -> django.http.HttpResponse:
    """
    [VIEW] Task lab 1: /info
    Returneaza pagina simpla cu info despre server
@@ -29,7 +29,7 @@ def info(request: django.http.HttpRequest) -> django.http.HttpResponse:
    return django.shortcuts.render(request, 'info.html', context)
 
 
-def detalii_accesare(request: django.http.HttpRequest, id: str) -> django.http.HttpResponse:
+def view_accesare(request: django.http.HttpRequest, id: str) -> django.http.HttpResponse:
    """extrage accesarea cu numarul dat de regex
 
    Args:
@@ -50,7 +50,7 @@ def detalii_accesare(request: django.http.HttpRequest, id: str) -> django.http.H
    return django.shortcuts.render(request, "accesare.html", {"cerere": cerere, "id": index})
 
 
-def istoric_cereri(request: django.http.HttpRequest) -> django.http.HttpResponse:
+def view_log(request: django.http.HttpRequest) -> django.http.HttpResponse:
    """ 
    [VIEW] Cerinta lab 2: /log endpoint
    """
