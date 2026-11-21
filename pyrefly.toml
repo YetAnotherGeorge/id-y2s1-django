@@ -1,0 +1,2 @@
+# Fara acest pyrefly.toml, pyrefly nu gaseste corect fisierele din magazin_agricol
+search-path = ["magazin_agricol"]
