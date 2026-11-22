@@ -1,4 +1,5 @@
 {% extends "baza.html" %}
+{% load static %}
 
 {# Override title #}
 {% block title %}AgroNow - Acasa{% endblock %}
@@ -8,6 +9,8 @@
 
 <h2>Bine ați venit!</h2>
 <p>Descoperiți piese și componente mecanice pentru tractoare și utilaje agricole.</p>
+
+<img src="{% static 'img/pexels-vladimirsrajber-18431220.jpg' %}" alt="Utilaje agricole AgroNow" style="max-width: 600px; width: 100%; height: auto; border-radius: 6px; margin: 12px 0;">
 
 <!-- SECTION: reviews -->
 <section id="reviews">
