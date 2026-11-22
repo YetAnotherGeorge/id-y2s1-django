@@ -15,10 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-vkxv=15m=277$oqy=41ezfmx6l9na#8ie!*imrntx-ja(_%a%g'
 
@@ -29,7 +25,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 INSTALLED_APPS = [
    'django.contrib.admin',
    'django.contrib.auth',
@@ -63,6 +58,7 @@ TEMPLATES = [
             'django.template.context_processors.request',
             'django.contrib.auth.context_processors.auth',
             'django.contrib.messages.context_processors.messages',
+            'app_zona_agro_now.context_processors.date_firma'
          ],
       },
    },
@@ -127,4 +123,15 @@ MAILERS = {
    'default': {
       'BACKEND': 'django.core.mail.backends.console.EmailBackend',
    },
+}
+
+# lab 2 - 2 - 6
+DATE_FIRMA = {
+   "nume": "AgroNow S.R.L.",
+   "an_infiintare": 2005,
+   "telefon": "+40 721 000 123",
+   "adresa": "Șoseaua Agricolă nr. 42, Jud. Ilfov",
+   # Cele 2 caracteristici suplimentare alese:
+   "email": "contact@agronow.ro",
+   "cod_caen": "4661 - Comerț cu ridicata al mașinilor agricole, echipamentelor și furniturilor",
 }

@@ -11,6 +11,9 @@ from .utils.request_tools.accesare_threadsafe import Accesare
 # Folosit in magazin_agricol\magazin_agricol\settings.py, in MIDDLEWARE
 class AccesareMiddleware:
    def __init__(self, get_response):
+      """
+      https://docs.djangoproject.com/en/6.1/topics/http/middleware/
+      """
       self.get_response = get_response
 
    def __call__(self, request):

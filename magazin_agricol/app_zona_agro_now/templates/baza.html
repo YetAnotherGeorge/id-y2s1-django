@@ -97,7 +97,24 @@
 
    <!-- Footer -->
    <footer>
-      <p>AgroNow - piese pentru agricultură</p>
+      <span>AgroNow - piese pentru agricultură</span>
+      <span>|</span>
+      <!-- Client ip -->
+      <span class="usr-ip">
+         <span>IP utilizator: </span>
+         <span>{{request.ip_client}}</span>
+      </span>
+
+      <!-- Date firma -->
+      <br/>
+      <span>
+         <p>
+            &copy; {{ firma.an_infiintare }}-{{ an_curent }} {{ firma.nume }} Toate drepturile rezervate.
+         </p>
+         <p>
+            Sediu: {{ firma.adresa }} | Tel: {{ firma.telefon }} | Email: {{ firma.email }} | CAEN: {{ firma.cod_caen }}
+         </p>
+      </span>
    </footer>
 </body>
 </html>
