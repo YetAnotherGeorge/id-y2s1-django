@@ -1,0 +1,46 @@
+{% extends 'baza.html' %}
+
+{% block title %}AgroNow - Contact{% endblock %}
+
+{% block extra_css %}
+<style>
+   .contact-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px;
+      line-height: 1.6;
+   }
+   .contact-box {
+      padding: 20px;
+      margin-top: 20px;
+      background: #fff;
+      border-left: 4px solid #7FB069;
+      border-radius: 4px;
+   }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+   <h1>Contact</h1>
+   <p>Ai nevoie de ajutor pentru identificarea unei piese agricole? Contactează-ne folosind datele de mai jos:</p>
+
+   <div class="contact-box">
+      <h3>Date de contact</h3>
+      <ul>
+         <li><strong>Adresă depozit &amp; showroom:</strong> Șoseaua Agricolă nr. 42, Jud. Ilfov</li>
+         <li><strong>Telefon comenzi &amp; suport tehnic:</strong> +40 721 000 123</li>
+         <li><strong>Email:</strong> contact@agronow.ro</li>
+      </ul>
+   </div>
+
+   <div class="contact-box">
+      <h3>Program de lucru</h3>
+      <ul>
+         <li><strong>Luni – Vineri:</strong> 08:00 – 18:00</li>
+         <li><strong>Sâmbătă (în sezon agricol):</strong> 08:00 – 14:00</li>
+         <li><strong>Duminică:</strong> Închis</li>
+      </ul>
+   </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'baza.html' %}
 {% load static_mtime %}
 
 {% block extra_css %}
@@ -18,7 +18,8 @@
    <p>Compania noastră continuă să inoveze și să se adapteze nevoilor clienților, menținându-se fidelă valorilor sale fundamentale de calitate și fiabilitate.</p>
 
    {% comment %} timeline evenimente {% endcomment %}
-   <div class="timeline">
+   <section id="istoric-timeline">
+      <div class="timeline">
       <div class="container left">
          <div class="content">
             <span class="timeline-title">2005</span>
@@ -50,28 +51,31 @@
          </div>
       </div>
    </div>
+   </section>
 
    {% comment %} cele mai accesate / cele mai putin accesate pagini {% endcomment %}
-   <div class="cele-mai-accesate">
-     <table>
-      <thead>
-         <tr>
-            <th>Pagina</th>
-            <th>Tip</th>
-            <th>Numar Accesari</th>
-         </tr>
-         <tr>
-            <td>{{ ic_top }}</td>
-            <td>Cea mai accesata pagina</td>
-            <td>{{ ic_top_count }}</td>
-         </tr>
-         <tr>
-            <td>{{ ic_bottom }}</td>
-            <td>Cea mai putin accesata pagina (din cele accesate)</td>
-            <td>{{ ic_bottom_count }}</td>
-         </tr>
-      </thead>
-     </table>
-   </div>
+   <section id="istoric-most-accessed">
+      <div class="cele-mai-accesate">
+         <table>
+            <thead>
+               <tr>
+                  <th>Pagina</th>
+                  <th>Tip</th>
+                  <th>Numar Accesari</th>
+               </tr>
+               <tr>
+                  <td>{{ ic_top }}</td>
+                  <td>Cea mai accesata pagina</td>
+                  <td>{{ ic_top_count }}</td>
+               </tr>
+               <tr>
+                  <td>{{ ic_bottom }}</td>
+                  <td>Cea mai putin accesata pagina (din cele accesate)</td>
+                  <td>{{ ic_bottom_count }}</td>
+               </tr>
+            </thead>
+         </table>
+      </div>
+  </section>
 </div>
 {% endblock %}

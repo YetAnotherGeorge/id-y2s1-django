@@ -1,0 +1,103 @@
+{% comment %} Enable serving static files {% endcomment %}
+{% load static_mtime %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <title>{% block title %}AgroNow{% endblock %}</title>
+
+   <!-- https://developers.google.com/fonts/docs/material_symbols -->
+   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+   
+   <link rel="stylesheet" href="{% static_mtime 'css/base.css' %}">
+   <link rel="stylesheet" href="{% static_mtime 'css/nav.css' %}">
+   {% block extra_css %}{% endblock %}
+</head>
+<body>
+   <!-- Header -->
+   <header>
+      <h1>AgroNow</h1>
+      <!-- meniu cu submeniuri -->
+      <nav class="main-nav">
+         <!-- Pagina Principala -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'home' %}">
+               Acasa
+               <span class="material-symbols-outlined">arrow_drop_down </span>
+            </a>
+            <div class="subnav-content">
+               <a href="{% url 'home'%}#reviews">Review-uri de la Clienti</a>
+               <a href="{% url 'home'%}#promotions">Promotii</a>
+               <a href="{% url 'home'%}#new-client-offers">Devino Client</a>
+               <a href="{% url 'home'%}#schedule">Orar</a>
+            </div>
+         </div>
+
+         <!-- Pagina Produse: no sections -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'produse' %}">Produse</a>
+         </div>
+
+         <!-- Pagina Cos: no sections -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'cos_cumparaturi' %}">Cos de Cumparaturi</a>
+         </div>
+
+         <!-- Pagina Despre -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'despre' %}">
+               Despre
+               <span class="material-symbols-outlined"> arrow_drop_down </span>
+            </a>
+            <div class="subnav-content">
+               <a href="{% url 'despre' %}">Despre</a>
+               <a href="{% url 'despre' %}#about-us">Despre noi</a>
+               <a href="{% url 'despre' %}#meet-the-team">Intalneste Echipa</a>
+            </div>
+         </div>
+        
+         <!-- Pagina Istoric -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'istoric' %}">
+               Istoric
+               <span class="material-symbols-outlined"> arrow_drop_down </span>
+            </a>
+            <div class="subnav-content">
+               <a href="{% url 'istoric'%}#istoric-timeline">Timeline de Realizari</a>
+               <a href="{% url 'istoric'%}#istoric-most-accessed">Cele mai accesate pagini</a>
+            </div>
+         </div>
+         
+         <!-- Pagina Contact -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'contact' %}">Contact</a>
+         </div>
+
+         <!-- Pagina Info -->
+         <div class="subnav">
+           <a class="subnav-a-header" href="{% url 'info' %}">Info</a>
+         </div>
+         
+         <!-- Pagina Log -->
+         <div class="subnav">
+            <a class="subnav-a-header" href="{% url 'log' %}">Log</a>
+         </div>
+      </nav>
+   </header>
+
+   <!-- main -->
+   <div id="main-content">
+      <main>
+         {% block content %}{% endblock %}
+      </main>
+   </div>
+
+   <!-- Footer -->
+   <footer>
+      <p>AgroNow - piese pentru agricultură</p>
+   </footer>
+</body>
+</html>

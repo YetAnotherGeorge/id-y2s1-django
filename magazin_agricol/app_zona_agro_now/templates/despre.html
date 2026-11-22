@@ -1,8 +1,105 @@
-{% extends "base.html" %}
+{% extends "baza.html" %}
 
 {% block title %}AgroNow - Despre{% endblock %}
 
+{% block extra_css %}
+<style>
+   .despre-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      line-height: 1.6;
+   }
+   .despre-page section {
+      margin-top: 48px;
+      padding: 20px;
+      background: #fff;
+      border-left: 4px solid #7FB069;
+      border-radius: 4px;
+      scroll-margin-top: calc(var(--header-height) + 16px);
+   }
+   .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+   }
+   .team-card {
+      padding: 16px;
+      background: #f7faf4;
+      border: 1px solid #d5e2ce;
+      border-radius: 4px;
+   }
+   .team-card h4 {
+      margin: 0 0 4px;
+      color: #072020;
+   }
+   .team-card small {
+      color: #4f743f;
+      font-weight: bold;
+   }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Despre Noi</h2>
-<p>AgroNow este dedicat furnizării de piese și componente mecanice pentru tractoare și utilaje agricole.</p>
+<div class="despre-page">
+   <h2>Despre AgroNow</h2>
+   <p>
+      AgroNow este partenerul tău de încredere pentru piese și componente mecanice destinate tractoarelor,
+      combinelor și utilajelor agricole moderne. Susținem fermierii și atelierele de reparații din întreaga țară
+      prin livrare rapidă din stoc și consultanță tehnică specializată.
+   </p>
+   <p>
+      Fie că este vorba despre revizii sezoniere înainte de campania de semănat sau reparații urgente în plin sezon
+      de recoltare, punem la dispoziție repere originale și aftermarket verificate pentru cele mai populare mărci
+      de utilaje agricole.
+   </p>
+
+   <!-- SECTION: about-us -->
+   <section id="about-us">
+      <h3>Despre noi</h3>
+      <p>
+         Misiunea noastră este reducerea timpilor de staționare a utilajelor agricole prin acces rapid la piese de schimb
+         fiabile, la prețuri corecte. Lucrăm direct cu producători și distribuitori autorizați pentru a garanta
+         compatibilitatea și durabilitatea fiecărei componente livrate.
+      </p>
+      <p>
+         Portofoliul AgroNow acoperă o gamă completă de subansamble: componente pentru motor și transmisie, sisteme
+         hidraulice, filtre, rulmenți, curele, elemente de direcție și punți, precum și consumabile pentru lucrările
+         solului. Fiecare comandă este verificată după seria de șasiu sau codul OEM al utilajului pentru a evita
+         erorile de identificare.
+      </p>
+      <ul>
+         <li><strong>Peste 15.000 de repere</strong> disponibile în depozit sau la comandă rapidă.</li>
+         <li><strong>Identificare tehnică gratuită</strong> pe baza catalogului OEM al producătorului.</li>
+         <li><strong>Livrare în 24–48 de ore</strong> oriunde în România, direct la fermă sau atelier.</li>
+      </ul>
+   </section>
+
+   <!-- SECTION: meet-the-team -->
+   <section id="meet-the-team">
+      <h3>Întâlnește Echipa</h3>
+      <p>
+         În spatele platformei AgroNow se află o echipă de ingineri mecanici, consultanți în utilaje agricole și
+         specialiști în logistică, pregătiți să te ajute să găsești exact piesa potrivită.
+      </p>
+      <div class="team-grid">
+         <div class="team-card">
+            <h4>Andrei Ionescu</h4>
+            <small>Inginer Mecanic Utilaje Agricole</small>
+            <p>Coordonează identificarea pieselor după cod OEM și oferă suport tehnic pentru motoare și transmisii.</p>
+         </div>
+         <div class="team-card">
+            <h4>Elena Dumitrescu</h4>
+            <small>Responsabil Achiziții &amp; Stocuri</small>
+            <p>Gestionează relația cu furnizorii externi și asigură disponibilitatea pieselor în perioadele de vârf agricol.</p>
+         </div>
+         <div class="team-card">
+            <h4>Mihai Popa</h4>
+            <small>Consultant Relații Clienți &amp; Flote</small>
+            <p>Asistă fermele și cooperativele agricole în planificarea reviziilor și a comenzilor recurente de consumabile.</p>
+         </div>
+      </div>
+   </section>
+</div>
 {% endblock %}

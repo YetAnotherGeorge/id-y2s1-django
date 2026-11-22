@@ -1,10 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'baza.html' %}
 
 {% block title %}Informatii despre server{% endblock %}
 
 {% block content %}
    <h1>Informatii despre server</h1>
 
-   {{ data_html }}
+   <!-- Fara safe, html-ul se va randa ca string -->
+   {{ data_html | safe}}
 
 {% endblock %}
