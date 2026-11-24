@@ -1,0 +1,61 @@
+%% Schema ER 
+
+erDiagram
+    "CATEGORIE - Tabel 01" {
+        int id_categorie PK "AutoField"
+        string nume UK "CharField(unique=True, error_messages)"
+        text descriere "TextField(null=True, blank=True)"
+        string culoare "CharField(default='#7FB069', blank=True, help_text)"
+        string sigla "CharField(null=True, blank=True, help_text)"
+        bool necesita_montaj_autorizat "BooleanField(default=False)"
+    }
+
+    "BRAND_UTILAJ - Tabel 02" {
+        int id_brand PK "AutoField"
+        string nume UK "CharField(unique=True, error_messages)"
+        string tara_origine "CharField(null=True, blank=True)"
+        string website_oficial "URLField(null=True, blank=True, error_messages)"
+    }
+
+    "MONEDA - Tabel 03" {
+        int id_moneda PK "AutoField"
+        string cod_iso UK "CharField(max_length=3, unique=True, error_messages)"
+        double curs_schimb_ron "FloatField(help_text, Q: curs_schimb_ron > 0)"
+        date data_actualizare "DateField(default=date.today)"
+    }
+
+    "FURNIZOR - Tabel 04" {
+        int id_furnizor PK "AutoField"
+        int id_moneda FK "ForeignKey(Moneda)"
+        string nume_companie UK "CharField(unique=True)"
+        string tara "CharField(null=True, blank=True)"
+        int timp_livrare_zile "IntegerField(default=3, blank=True, Q: timp_livrare_zile > 0)"
+    }
+
+    "PRODUS - Tabel 05" {
+        int id_produs PK "AutoField"
+        int id_categorie FK "ForeignKey(Categorie)"
+        int id_furnizor FK "ForeignKey(Furnizor)"
+        string nume "CharField(db_index=True, error_messages)"
+        int pret_bani "IntegerField(db_index=True, help_text, error_messages, Q: pret_bani > 0)"
+        int stoc_disponibil "IntegerField(default=0, blank=True, Q: stoc_disponibil >= 0)"
+        enum tensiune_alimentare "CharField(choices=['12V','24V','N/A'], default='N/A', db_index=True)"
+        bool este_original_oem "BooleanField(default=False)"
+        int garantie_luni "IntegerField(null=True, blank=True, Q: garantie_luni >= 0)"
+        datetime data_adaugare "DateTimeField(default=timezone.now, db_index=True)"
+        json modele_compatibile "JSONField(default=list, blank=True, help_text)"
+    }
+
+    "IMAGINE_PRODUS - Tabel 06 (Entitate Slaba)" {
+        int id PK "AutoField (UniqueConstraint: id_produs + numar_ordine)"
+        int id_produs FK "ForeignKey(Produs, on_delete=CASCADE)"
+        int numar_ordine "PositiveIntegerField(help_text, Q: numar_ordine >= 1)"
+        image cale_fisier "ImageField(upload_to='produse/')"
+        bool este_principala "BooleanField(default=False)"
+    }
+
+    "CATEGORIE - Tabel 01" ||--o{ "PRODUS - Tabel 05" : incadreaza
+    "FURNIZOR - Tabel 04" ||--o{ "PRODUS - Tabel 05" : distribuie
+    "MONEDA - Tabel 03" ||--o{ "FURNIZOR - Tabel 04" : utilizata_de
+    "PRODUS - Tabel 05" }o--o{ "BRAND_UTILAJ - Tabel 02" : compatibil_cu
+    "PRODUS - Tabel 05" ||--o{ "IMAGINE_PRODUS - Tabel 06 (Entitate Slaba)" : are

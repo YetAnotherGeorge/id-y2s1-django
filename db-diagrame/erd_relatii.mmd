@@ -1,0 +1,12 @@
+%% Cardinalitate:
+%% - One to One: ||--||
+%% - One to Many (0 allowed): ||--o{
+%% - One to Many (1 allowed): ||--|{
+%% - Many to Many: }o--o{ / }|--|{
+
+erDiagram
+    CATEGORIE ||--o{ PRODUS : incadreaza
+    FURNIZOR ||--o{ PRODUS : distribuie
+    MONEDA ||--o{ FURNIZOR : utilizata_de
+    PRODUS }o--o{ BRAND_UTILAJ : compatibil_cu
+    PRODUS ||--o{ IMAGINE_PRODUS : are
