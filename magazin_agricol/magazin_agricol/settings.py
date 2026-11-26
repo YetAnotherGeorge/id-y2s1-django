@@ -70,11 +70,14 @@ WSGI_APPLICATION = 'magazin_agricol.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-# todo: configure with postgres
 DATABASES = {
    'default': {
-      'ENGINE': 'django.db.backends.sqlite3',
-      'NAME': BASE_DIR / 'db.sqlite3',
+      'ENGINE': 'django.db.backends.postgresql',
+      'NAME': 'postgres',
+      'USER': 'agronow-backend',
+      'PASSWORD': 'django123',
+      'HOST': '10.19.49.10',
+      'PORT': '8010',
    }
 }
 
